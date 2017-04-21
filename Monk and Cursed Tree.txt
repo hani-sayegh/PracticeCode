@@ -1,0 +1,78 @@
+//Things learnt:
+//recursion works when it should not without return statement
+//big difference between if and then if vs if else
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+struct Node
+{
+	int val;
+	Node * left;
+	Node * right;
+} *root;
+
+void addNode(Node *& root, int val)
+{
+	if (!root)
+	{
+		root = new Node();
+		root->val = val;
+	}
+	else if (val > root->val)
+		addNode(root->right, val);
+	else
+		addNode(root->left, val);
+
+}
+
+Node * findBridgeNode(Node * root, int X, int Y)
+{
+	auto temp = root->val;
+	if (X < temp && Y < temp)
+		return findBridgeNode(root->left, X, Y);
+	else if (X > temp && Y > temp)
+		return findBridgeNode(root->right, X, Y);
+	else
+	{
+		return root;
+	}
+}
+
+int findResult(Node * bridge, int goal)
+{
+	static int result = -1;
+
+	result = max(result, bridge->val);
+	if (bridge->val == goal)
+		return result;
+	else
+	{
+		if (goal < bridge->val)
+			return findResult(bridge->left, goal);
+		else
+			return findResult(bridge->right, goal);
+	}
+}
+
+int main()
+{
+	int N;
+	cin >> N;
+	int X;
+	while (N--)
+	{
+		cin >> X;
+		addNode(root, X);
+	}
+
+	int o, w;
+	cin >> o >> w;
+	auto b = findBridgeNode(root, o, w);
+	int	result = max(findResult(b, w), findResult(b, o)); //Very nice how this was simplified.
+	cout << result;
+	return 0;
+}
